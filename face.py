@@ -32,7 +32,7 @@ def collect_images():
         return_value, image = camera.read()
 
         if not return_value:
-            print("Can't receive frame (stream end?). Exiting ...")
+            print("Can't receive frame. Exiting ...")
             break
 
         # Display the resulting frame
@@ -50,12 +50,42 @@ def collect_images():
     cv.destroyAllWindows()
 
 
-
-def main():
-    collect_images()
+def limit_gpu_memory_usage():
+    # Limit GPU memory usage.
     gpus = tf.config.experimental.list_physical_devices('GPU')
     for gpu in gpus:
         tf.config.experimental.set_memory_growth(gpu, True)
+    tf.config.experimental.list_physical_devices('GPU')
+
+def load_image(image_path):
+    image = tf.io.read_file(image_path) # Byte encoded image.
+    img = tf.image.decode_jpeg(image, channels=3)
+    return img
+
+def load_into_tensorflow_dataset():
+    # Load images into tensorflow dataset.
+    images = tf.data.Dataset.list_files('data/images/*.jpg', shuffle=False)  # Shuffle false to keep images in order.
+    # Apply the load_image function to every image in the dataset.
+    images = images.map(load_image)
+    image_generator = images.batch(4).as_numpy_iterator()  # Batch in groups of 4 images (Grouping images together).
+    plot_images = image_generator.next()  # Get the next batch of images.
+
+    # Visualize the images.
+    fig, axes = plt.subplots(1, 4, figsize=(10, 10))
+    for i, ax in enumerate(axes):
+        ax.imshow(plot_images[i])  # Plot each image in the batch
+
+    plt.show()
+
+
+def main():
+    # If you want to collect images, uncomment the line below.
+    #  collect_images()
+    # Limit GPU memory usage.
+    limit_gpu_memory_usage()
+    # Load images into tensorflow dataset and visualize them.
+    load_into_tensorflow_dataset()
+
 
 
 if __name__ == '__main__':
