@@ -27,7 +27,7 @@ def collect_images():
 
         img_name = os.path.join(IMAGES_DIR, '{}.jpg'.format(uuid.uuid1()))
         cv.imwrite(img_name, image)
-        time.sleep(0.5)
+        time.sleep(0.1)
 
         img_count += 1
 
