@@ -2,7 +2,11 @@ from flask import Flask, jsonify
 import os  # File management
 import time  # Time management
 import uuid  # Unique file names
-import cv2 as cv
+import cv2 as cv  # OpenCV
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+import json
 
 # # Flask server uses port 5000. To run on website use localhost:5000/api/data
 # app = Flask(__name__)
@@ -49,6 +53,9 @@ def collect_images():
 
 def main():
     collect_images()
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
 
 
 if __name__ == '__main__':
