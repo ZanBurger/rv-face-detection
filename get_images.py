@@ -3,9 +3,10 @@ import os
 import time
 import uuid
 
+
 def collect_images():
-    IMAGES_DIR = os.path.join('data', 'M')
-    duration = 60  # Duration in seconds
+    IMAGES_DIR = os.path.join('data', 'images')
+    duration = 60
 
     camera = cv.VideoCapture(0)
     if not camera.isOpened():
@@ -24,15 +25,14 @@ def collect_images():
             print("Can't receive frame (stream end?). Exiting ...")
             break
 
-
         img_name = os.path.join(IMAGES_DIR, '{}.jpg'.format(uuid.uuid1()))
         cv.imwrite(img_name, image)
         time.sleep(0.5)
 
         img_count += 1
 
-    # When everything done, release the capture and destroy the window
     camera.release()
     cv.destroyAllWindows()
+
 
 collect_images()

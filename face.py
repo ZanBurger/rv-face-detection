@@ -188,11 +188,11 @@ def razdeli_podatke(data, test_size):
 
 # ---- MAIN ----
 
-main_folder = ".\cats&dogs"
+main_folder = "./data/images"
 
-categories = ["cats", "dogs"]
+categories = ["Marko", "Zan"]
 
-# Data preparation (separating cats and dogs)
+# Data separation.
 data = []
 for category in categories:
     path = os.path.join(main_folder, category)
