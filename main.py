@@ -21,7 +21,7 @@ def get_className(classNo):
     elif classNo == 1:
         return "Zan"
     elif classNo == 2:
-        "Other"
+      return  "Other"
 
 
 while True:
@@ -32,7 +32,7 @@ while True:
         img = cv2.resize(crop_img, (224, 224))
         img = img.reshape(1, 224, 224, 3)
         prediction = model.predict(img)
-        classIndex = np.argmax(prediction, axis=-1)
+        classIndex = int(np.argmax(prediction, axis=-1))
         probabilityValue = np.amax(prediction)
 
         cv2.rectangle(imgOrignal, (x, y), (x + w, y + h), (0, 255, 0), 2)
