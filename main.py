@@ -1,51 +1,76 @@
-from keras.models import load_model  # TensorFlow is required for Keras to work
-import cv2  # Install opencv-python
+import cv2
+from skimage.feature import local_binary_pattern, hog
+from joblib import load
 import numpy as np
 
-# Disable scientific notation for clarity
-np.set_printoptions(suppress=True)
+# Load the cascade
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Load the model
-model = load_model("C:/Users/Burge.LAPTOP-SAFB8NNK/Desktop/College/FERI/2. Letnik/Projektno Delo/rv-face-detection/keras_Model.h5", compile=False)
+# Load the trained models
+svm = load('svm_lbp_hog.joblib')
+dt = load('dt_lbp_hog.joblib')
+scaler = load('scaler_lbp_hog.joblib')
 
-# Load the labels
-class_names = open("C:/Users/Burge.LAPTOP-SAFB8NNK/Desktop/College/FERI/2. Letnik/Projektno Delo/rv-face-detection/labels.txt", "r").readlines()
+# Prepare for feature extraction
+num_points = 24
+radius = 8
+orientations = 9
+pixels_per_cell = (8, 8)
+cells_per_block = (2, 2)
 
-# CAMERA can be 0 or 1 based on default camera of your computer
-camera = cv2.VideoCapture(0)
+# To capture video from webcam.
+cap = cv2.VideoCapture(0)
 
 while True:
-    # Grab the webcamera's image.
-    ret, image = camera.read()
+    # Read the frame
+    _, img = cap.read()
 
-    # Resize the raw image into (224-height,224-width) pixels
-    image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Show the image in a window
-    cv2.imshow("Webcam Image", image)
+    # Detect the faces
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
-    # Make the image a numpy array and reshape it to the models input shape.
-    image = np.asarray(image, dtype=np.float32).reshape(1, 224, 224, 3)
+    # For each detected face
+    for (x, y, w, h) in faces:
+        for (x, y, w, h) in faces:
+            # Draw the rectangle around each face
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
-    # Normalize the image array
-    image = (image / 127.5) - 1
+            # Get the face ROI and resize it to match training data size
+            face_roi = gray[y:y + h, x:x + w]
+            face_roi = cv2.resize(face_roi, (64, 128))
 
-    # Predicts the model
-    prediction = model.predict(image)
-    index = np.argmax(prediction)
-    class_name = class_names[index]
-    confidence_score = prediction[0][index]
+        # Compute LBP features
+        lbp = local_binary_pattern(face_roi, num_points, radius, method="uniform")
+        (hist, _) = np.histogram(lbp.ravel(), bins=np.arange(0, num_points + 3), range=(0, num_points + 2))
+        hist = hist.astype("float")
+        hist /= (hist.sum() + 1e-7)
 
-    # Print prediction and confidence score
-    print("Class:", class_name[2:], end="")
-    print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+        # Compute HOG features
+        hog_features = hog(face_roi, orientations=orientations, pixels_per_cell=pixels_per_cell,
+                           cells_per_block=cells_per_block, block_norm='L2-Hys', transform_sqrt=True)
 
-    # Listen to the keyboard for presses.
-    keyboard_input = cv2.waitKey(1)
+        # Concatenate LBP and HOG features
+        features = np.concatenate((hist, hog_features))
 
-    # 27 is the ASCII for the esc key on your keyboard.
-    if keyboard_input == 27:
+        # Scale the features using the same scaler that was used on the training data
+        features_scaled = scaler.transform([features])
+
+        # Make predictions with both models
+        svm_pred = svm.predict(features_scaled)
+        dt_pred = dt.predict(features_scaled)
+
+        # Print the results
+        print(f"Face classified by SVM as {svm_pred[0]} and by DT as {dt_pred[0]}.")
+
+    # Display
+    cv2.imshow('img', img)
+
+    # Stop if escape key is pressed
+    k = cv2.waitKey(30) & 0xff
+    if k == 27:
         break
 
-camera.release()
-cv2.destroyAllWindows()
+# Release the VideoCapture object
+cap.release()
