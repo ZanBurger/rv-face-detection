@@ -6,7 +6,7 @@ import uuid
 
 def collect_images():
     IMAGES_DIR = os.path.join('data', 'images')
-    duration = 60
+    duration = 100
 
     camera = cv.VideoCapture(0)
     if not camera.isOpened():
