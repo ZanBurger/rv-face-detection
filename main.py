@@ -20,8 +20,8 @@ def get_className(classNo):
         return "Marko"
     elif classNo == 1:
         return "Zan"
-    else:
-        "None"
+    elif classNo == 2:
+        "Other"
 
 
 while True:

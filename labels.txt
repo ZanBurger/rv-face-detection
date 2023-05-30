@@ -1,2 +1,3 @@
 0 Marko
 1 Zan
+2 Other
