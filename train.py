@@ -167,7 +167,7 @@ def razdeli_podatke(data, test_size):
 # ---- MAIN ----
 
 
-main_folders = ["./data/images/Marko", "./data/images/Zan", "./data/images/Other"]
+main_folders = ["C:/Users/Burge.LAPTOP-SAFB8NNK/Desktop/College/FERI/2. Letnik/Projektno Delo/rv-face-detection/data/images/Marko", "C:/Users/Burge.LAPTOP-SAFB8NNK/Desktop/College/FERI/2. Letnik/Projektno Delo/rv-face-detection//data/images/Zan", "C:/Users/Burge.LAPTOP-SAFB8NNK/Desktop/College/FERI/2. Letnik/Projektno Delo/rv-face-detection//data/images/Other"]
 categories = ["Marko", "Zan", "Other"]
 
 
@@ -202,7 +202,7 @@ x_train_hog_and_lbp = extract_lbp_and_hog(x_train)
 
 train_and_save(x_train_hog_and_lbp, y_train)
 
-load_and_test("data/images/TestImages", categories)
+load_and_test("C:/Users/Burge.LAPTOP-SAFB8NNK/Desktop/College/FERI/2. Letnik/Projektno Delo/rv-face-detection/data/images/TestImages", categories)
 
 
 
