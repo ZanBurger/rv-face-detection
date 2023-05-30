@@ -17,7 +17,7 @@ def collect_images():
     end_time = start_time + duration
 
     img_count = 0
-    while time.time() < end_time:
+    while time.time() < end_time and img_count < 500:
         print('Collecting image {}'.format(img_count))
         return_value, image = camera.read()
 

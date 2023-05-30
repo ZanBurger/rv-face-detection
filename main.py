@@ -42,7 +42,6 @@ while True:
 
         cv2.imshow("Facial Recognition Model", imgOrignal)
         k = cv2.waitKey(1)
-        print("I'm running")
         if k == ord('q'):
             cap.release()
             cv2.destroyAllWindows()
