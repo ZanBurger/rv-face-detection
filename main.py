@@ -58,11 +58,10 @@ while True:
         features_scaled = scaler.transform([features])
 
         # Make predictions with both models
-        svm_pred = svm.predict(features_scaled)
         dt_pred = dt.predict(features_scaled)
 
         # Print the results
-        print(f"Face classified by SVM as {svm_pred[0]} and by DT as {dt_pred[0]}.")
+        print(f"Face classified by DT as {dt_pred[0]}.")
 
     # Display
     cv2.imshow('img', img)
