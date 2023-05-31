@@ -198,9 +198,9 @@ y_train = [item[1] for item in train_data]  # labels
 x_test = [item[0] for item in test_data]  # image_paths
 y_test = [item[1] for item in test_data]  # labels
 
-#x_train_hog_and_lbp = extract_lbp_and_hog(x_train)
+x_train_hog_and_lbp = extract_lbp_and_hog(x_train)
 
-#train_and_save(x_train_hog_and_lbp, y_train)
+train_and_save(x_train_hog_and_lbp, y_train)
 
 load_and_test("./data/images/TestImages", categories)
 
